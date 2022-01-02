@@ -1,4 +1,4 @@
-import sytled from 'styled-components'
+import styled from 'styled-components'
 import SideBar from './Components/SideBar'
 import ChatList from './Components/ChatList'
 import ChatView from './Components/ChatView'
@@ -17,15 +17,16 @@ function App(){
 
 export default App
 
-const Wrapper = Styled.div `
+const Wrapper = styled.div `
   background-color:#282a37;
   min-height:100vh;
   max-height:100vh;
   min-width:100vw;
   max-width:100vw;  
+  display:flex;
 `
 
-const Main = Styled.div`
+const Main = styled.div`
   flex:1;
   display:flex;
   justify-content:center;
