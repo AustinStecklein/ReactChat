@@ -1,37 +1,136 @@
 import styled from 'styled-components'
-import Logo from '../assets/Logo.png'
+import { useState, useEffect } from 'react'
+import { collection, onSnapshot, addDoc, serverTimestamp, orderBy, query, updateDoc, doc } from 'firebase/firestore'
+import { db } from '../firebase'
+import { IncomingMessage } from './IncomingMessage'
+import { SentMessage } from './SentMessage'
+const ChatView = ({ currentConversation, user }) => {
 
-const ChatView=()=>{
-return <Wrapper>
-    <ChatDetails>
-        <Avatar><img src={Logo} alt="Avatar"/></Avatar>
-        <ChatInfo>
-            <Name value= {'chat'}></Name>
-            <OnlineIndicator>
-                <span>•</span> Online
-            </OnlineIndicator>
-        </ChatInfo>
-        <Icons>
-            <i className='fas fa-video'/>
-            <i className='fas fa-file-code'/>
-            <i className='fas fa-phone'/>
-            <i className='fas fa-volume-up'/>
-            <i className='fas fa-image'/>
-        </Icons>
-    </ChatDetails>
-    <MessageWrapper>
-        <Messages></Messages>
-        <InputWrapper>
-            <ActionButton>
-                <i className='fas fa-plus'/>
-            </ActionButton>
-            <MessageInput placeholder='type a message...'/>
-            <ActionButton>
-                <i className='fas fa-arrow-circle-up'/>
-            </ActionButton>
-        </InputWrapper>
-    </MessageWrapper>
-</Wrapper>
+    const [newTitle, setNewTitle] = useState(currentConversation.name)
+    const [messages, setMessages] = useState([''])
+    const [newMessage, setNewMessage] = useState([''])
+
+    useEffect(() => {
+        setNewTitle(currentConversation.name)
+
+    }, [currentConversation])
+
+    const updateChatTitle = async e => {
+        e.preventDefault()
+        const chatRef = doc(db, 'messages', currentConversation.id)
+        if (newTitle) {
+            await updateDoc(chatRef, {
+                name: newTitle,
+            })
+        }
+    }
+
+
+
+    useEffect(() => {
+        if (currentConversation) {
+            const q = query(
+                collection(db, 'messages', currentConversation.id, 'messageHistory'),
+                orderBy('timestamp', 'desc')
+            )
+            const unsubscribe = onSnapshot(q, snapshot => {
+                const tempMessages = []
+                snapshot.forEach(doc => {
+                    tempMessages.push({
+                        id: doc.id,
+                        ...doc.data(),
+                    })
+                })
+                setMessages(tempMessages)
+            })
+            return () => unsubscribe()
+        }
+    }, [currentConversation])
+
+    const sendMessage = async e => {
+      e.preventDefault()
+      if(newMessage) {
+            await addDoc(
+                collection(db, 'messages', currentConversation.id, 'messageHistory'),
+                {
+                    name: user.name,
+                    email: user.email,
+                    message: newMessage,
+                    avatar: user.avatar,
+                    timestamp: serverTimestamp(),
+
+                },
+            )
+
+            setNewMessage('')
+
+            await updateDoc(
+                doc(db, 'messages', currentConversation.id), { 
+                    "messageHistory": currentConversation.id,
+                    lastUpdated: serverTimestamp(),
+                    lastMessage: newMessage
+                }
+            )
+        }
+    }
+    return <Wrapper>
+        <ChatDetails>
+            <Avatar>
+                {
+                    currentConversation && (
+                        <img src={currentConversation.avatar} alt={currentConversation.name} />
+                    )
+                }
+            </Avatar>
+            <ChatInfo>
+                <form onSubmit={updateChatTitle}>
+
+                    <Name value={currentConversation ? newTitle : "select a chat"}
+                        onChange={e => setNewTitle(e.target.value)}
+                        disabled={!currentConversation}></Name>
+                </form>
+                <OnlineIndicator>
+                    <span>•</span> Online
+                </OnlineIndicator>
+            </ChatInfo>
+            <Icons>
+                <i className='fas fa-video' />
+                <i className='fas fa-file-code' />
+                <i className='fas fa-phone' />
+                <i className='fas fa-volume-up' />
+                <i className='fas fa-image' />
+            </Icons>
+        </ChatDetails>
+        <MessageWrapper>
+            <Messages>
+                {
+                    messages.map((message, index) =>
+                        <>
+                            {
+                                message.email === user.email ? (
+                                    <SentMessage key={index} message={message} />
+                                ) : (
+                                    <IncomingMessage key={index} message={message} />
+                                )
+                            }
+                        </>
+                    )
+                }
+            </Messages>
+            <form onSubmit={sendMessage}>
+                <InputWrapper>
+                    <ActionButton>
+                        <i className='fas fa-plus' />
+                    </ActionButton>
+                    <MessageInput placeholder='type a message...' value={newMessage}
+                        onChange={e => setNewMessage(e.target.value)} />
+                    <ActionButton onClick={sendMessage}>
+                        <i className='fas fa-arrow-circle-up' />
+                    </ActionButton>
+                </InputWrapper>
+            </form>
+        </MessageWrapper>
+    </Wrapper>
 
 }
 
