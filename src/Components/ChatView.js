@@ -181,7 +181,11 @@ const MessageWrapper = styled.div`
     display: flex;
     flex-direction: column;
     overflow: scroll;
-    overflow: hidden;•
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    -ms-overflow-style: none; 
+    scrollbar-width: none;  
 `
 const MessageInput = styled.input`
     flex: 1;
@@ -201,7 +205,11 @@ const Messages = styled.div`
     display: flex;
     flex-direction: column-reverse;
     overflow: scroll;
-    overflow: hidden;
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    -ms-overflow-style: none; 
+    scrollbar-width: none;  
 `
 const InputWrapper = styled.div`
     display: flex;
