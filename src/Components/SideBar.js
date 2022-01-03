@@ -1,31 +1,37 @@
 import styled from 'styled-components'
 import Logo from '../assets/Logo.png'
+import {useState} from 'react'
+import {getAuth, signOut} from 'firebase/auth'
+const SideBar = ({user, setUser}) => {
 
-const SideBar = () => {
+const [activeIcon, setActiveIcon] = useState('inbox')
+const auth = getAuth()
+
   return (
     <Wrapper>
       <LogoContainer>
         <img src={Logo} alt='cp logo' />
       </LogoContainer>
       <SidebarIcons>
-        <SidebarIcon>
-          <i className="fas fa-inbox"></i>
+        <SidebarIcon onClick={()=>setActiveIcon('inbox')}>
+
+          <i className="fas fa-inbox" style={{color: activeIcon === 'inbox' && '#1d90f4'}}></i>
         </SidebarIcon>
 
-        <SidebarIcon>
-          <i className="fas fa-cog"></i>
+        <SidebarIcon onClick={()=>setActiveIcon('cog')}>
+          <i className="fas fa-cog" style={{color: activeIcon === 'cog' && '#1d90f4'}}></i>
         </SidebarIcon>
 
-        <SidebarIcon>
-          <i className="fas fa-user-circle"></i>
+        <SidebarIcon onClick={()=>setActiveIcon('user')}>
+          <i className="fas fa-user-circle" style={{color: activeIcon === 'user' && '#1d90f4'}}></i>
         </SidebarIcon>
 
-        <SidebarIcon>
-          <i className="fas fa-bolt"></i>
+        <SidebarIcon onClick={()=>setActiveIcon('bolt')}>
+          <i className="fas fa-bolt"  style={{color: activeIcon === 'bolt' && '#1d90f4'}}></i>
         </SidebarIcon>
       </SidebarIcons>
-      <ProfileIcon>
-        <img src={Logo} alt='cp logo' />
+      <ProfileIcon onClick = {()=> signOut(auth)}>
+        <img src={user.avatar} alt={user.name} />
       </ProfileIcon>
     </Wrapper>
   )

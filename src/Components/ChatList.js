@@ -1,27 +1,29 @@
 import styled from 'styled-components'
-import Logo from '../assets/Logo.png'
+import {collection, serverTimestamp, addDoc} from 'firebase/firestore'
+import {db} from '../firebase'
 
-const conversationData = [
-{
-    name: 'chat',
-    avatar: Logo,
-    lastMessage: 'Hello'
-},
-{
-    name: 'chat',
-    avatar: Logo,
-    lastMessage: 'Hello'
-}
 
-]
+const ChatList = ({conversationData, currentConversation, setCurrentConversation }) => {
 
-const ChatList = () => {
+    const addNewChat = async () => {
+        await addDoc(collection(db, 'message'), {
+            name: 'new chat',
+            avatar: `https://avatars.dicebear.com/api/adventurer/${Math.radom}.svg` ,
+            lastMessage: '',
+            lastUpdated: serverTimestamp(),
+        })
+    }
     return <Wrapper>
         <Title>Chats</Title>
         <Subtitle>Latest Converstaions</Subtitle>
         <Conversations>
             {conversationData.map((conversation, index) =>(
-                <ConversationCard key={index}>
+                <ConversationCard key={index}
+                    style={{
+                        backgroundColor: currentConversation.id === conversation.id ?'#1d90f4' : '#282a37'
+                    }}
+                    onClick={() => setCurrentConversation(conversation)}
+                >
                     <Avatar>
                         <img src={conversation.avatar} alt={conversation.name} />
                     </Avatar>
@@ -31,7 +33,15 @@ const ChatList = () => {
                     </ConverstationInfo>
                 </ConversationCard>
             ))}
-
+        <AddNewConversation onClick={addNewChat}>
+            <Avatar>
+                <i className='fas fa-plus'/>
+    
+            </Avatar>
+            <ConverstationInfo>
+                <Name>New Chat</Name>
+            </ConverstationInfo>
+        </AddNewConversation>
         </Conversations>
     </Wrapper>
 }
@@ -89,3 +99,23 @@ const LastMessage = styled.div `
     font-weight: 500
 `
 
+const AddNewConversation = styled.div `
+    display: flex;
+    margin: 12px -12px;
+    padding: 12px;
+    border-radius: 12px;
+
+    & div, i {
+        color: #757688;
+
+    }
+
+    &: hover {
+        background-color: #184773 !important
+        cursor: pointer;
+
+        & div, i {
+            color: #eee
+        }
+    }
+`

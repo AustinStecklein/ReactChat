@@ -22,5 +22,5 @@ const db = getFirestore()
 const provider = new GoogleAuthProvider()
 
 // Initialize Firebase
-const analytics = getAnalytics(app);
+const analytics = getAnalytics(firebaseApp);
 export {db, provider, analytics}
