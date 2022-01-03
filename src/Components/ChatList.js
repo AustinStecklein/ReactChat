@@ -6,7 +6,7 @@ import {db} from '../firebase'
 const ChatList = ({conversationData, currentConversation, setCurrentConversation }) => {
 
     const addNewChat = async () => {
-        await addDoc(collection(db, 'message'), {
+        await addDoc(collection(db, 'messages'), {
             name: 'new chat',
             avatar: `https://avatars.dicebear.com/api/adventurer/${Math.radom}.svg` ,
             lastMessage: '',
