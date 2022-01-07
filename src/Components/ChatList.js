@@ -56,7 +56,7 @@ padding: 50px 32px
 
 const Title = styled.div `
 font-size:48px;
-fotn-weight:700;
+font-weight:700;
 margin-bottom:60px`
 
 const Subtitle = styled.div `
@@ -111,11 +111,11 @@ const AddNewConversation = styled.div `
     }
 
     &: hover {
-        background-color: #184773 !important
+        background-color: #184773 !important;
         cursor: pointer;
 
         & div, i {
-            color: #eee
+            color: #eee;
         }
     }
 `
