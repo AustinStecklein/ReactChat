@@ -10,7 +10,7 @@ const auth = getAuth()
   return (
     <Wrapper>
       <LogoContainer>
-        <img src={Logo} alt='cp logo' />
+        <img src={user.avatar} alt={user.name} />
       </LogoContainer>
       <SidebarIcons>
         <SidebarIcon onClick={()=>setActiveIcon('inbox')}>
